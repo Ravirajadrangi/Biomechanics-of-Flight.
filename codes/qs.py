@@ -4,6 +4,10 @@
 Class for QS model calculations
 
 """
+from __future__ import division
+import numpy as np
+import pandas as pd
+from astropy import units as u
 
 class QS(object):
     """
@@ -32,6 +36,7 @@ class QS(object):
         self.body_v = body_v
         
         ## precision
+        self.Nstep     = Nstep
         self.time_step = np.linspace(0.,1/wing_freq.value,Nstep)*u.s # time steps in one full stroke
         self.Nsegments = Nsegments # how many strips make a wing
         
@@ -104,11 +109,42 @@ class QS(object):
         F_vert = pref*self.v_tot**2*C_L*np.sin(np.deg2rad(self.alpha_cor))
         F_hori = pref*self.v_tot**2*C_D*np.sin(np.deg2rad(self.alpha_cor))
         
-        ## integration
-        F_L = np.trapz(F_vert,self.wing_r,axis=0).to(u.N)
-        F_D = np.trapz(F_hori,self.wing_r,axis=0).to(u.N)
+        ## integration; two wings
+        F_V = 2 * np.trapz(F_vert,self.wing_r,axis=0).to(u.N)
+        F_H = 2 * np.trapz(F_hori,self.wing_r,axis=0).to(u.N)
+
+        ## upstroke = 0
+        ### but storke upstroke
+        F_V_,F_H_ = np.copy(F_V), np.copy(F_H)
+        
+        F_V[self.Nstep/2:] = 0
+        F_H[self.Nstep/2:] = 0
     
-        return F_L, F_D
+        return F_V, F_H, F_V_, F_H_
+
+    def transl_d_power(self):
+        """
+        Power consumption for overcoming drag
+        """
+        ## same as force
+        pref = 0.5*self.rho_air*self.wing_c
+        C_L,C_D = self.lift_drag_coeff()
+
+        self.v_tot = np.sqrt(self.wing_v**2 + self.body_v**2)
+
+        ## power = F_D * v_tot
+        P_drag = pref*self.v_tot**2*C_D * self.v_tot
+
+        ## integration; two wings
+        P_D = 2 * np.trapz(P_drag,self.wing_r,axis=0).to(u.W)
+
+        ## upstroke = 0
+        ### but keeps upstroke
+        P_D_ = np.copy(P_D)
+        
+        P_D[self.Nstep/2:] = 0
+
+        return P_D, P_D_
         
         
     #########################
