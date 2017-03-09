@@ -1,12 +1,11 @@
 """
-(updated: 2017/03/08)
+(updated: 2017/03/09)
 
 Class for QS model calculations
 
 """
 from __future__ import division
 import numpy as np
-import pandas as pd
 from astropy import units as u
 
 class QS(object):
