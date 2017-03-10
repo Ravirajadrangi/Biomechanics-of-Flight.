@@ -21,12 +21,20 @@ class QS(object):
      - 2a = chord length at shoulder
      -  b = radius (span) of the wing
     - Constant motions (including body speed)
+
+    Options:
+    ----------
+    - Stroke plane angle: defines the plane in which the wings are flapping
+     - e.g. in the normal vertical flapping this is 90 deg
+     - e.g. in shoveler's braking motion, this is around 0 deg
+
+     Defaults to 90 degrees.
     
     The inputs should be dimensional.
     """
     
     def __init__(self,wing_freq,wing_amp,wing_a,wing_r,body_v,
-                 Nstep=200,Nsegments=100):
+                 sp_ang=90.*u.deg,Nstep=200,Nsegments=100):
         ## wing kinematics
         self.wing_ome = (2*np.pi*wing_freq).to(u.s**-1)
         self.wing_amp = wing_amp
@@ -45,6 +53,9 @@ class QS(object):
         
         self.wing_r = np.linspace(0.,wing_r.value,Nsegments).reshape(100,1) * u.cm
         self.wing_c = self._ellipse(self.wing_a,wing_r,self.wing_r)
+
+        ## stroke plane angle
+        self.sp_ang = sp_ang.to(u.rad)
         
         ## Constants
         self.rho_air = 1*u.kg/u.m**3
@@ -64,8 +75,13 @@ class QS(object):
         ### speeds of wing elements
         self.wing_v = (self.wing_amp*(self.wing_r/self.wing_a) * \
                        self.wing_ome*np.sin(wt.value)).to(u.cm/u.s)
-        self.alpha_cor = np.mod(90-np.rad2deg(np.arctan(self.wing_v.value \
-                                                       /self.body_v.value)),180)*u.deg
+
+        ### effective velocity, cosine rule
+        self.v_eff  = np.sqrt(self.wing_v**2+self.body_v**2+ \
+                              2*self.wing_v*self.body_v*np.cos(self.sp_ang))
+
+        self.alpha_cor = np.rad2deg(np.arccos((self.wing_v+self.body_v* \
+                                       np.cos(self.sp_ang)) / self.v_eff))
         
         return alpha_geo - self.alpha_cor
     

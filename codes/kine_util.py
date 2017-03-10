@@ -1,5 +1,5 @@
 """
-(updated: 2017/03/02)
+(updated: 2017/03/09)
 
 Class for kinematic analysis:
 - plotting position / velocity / acceleration profiles
@@ -344,7 +344,7 @@ class Kinematics(object):
         avo_tpva, sho_tpva, avo_cpva, sho_cpva = self.vel_acc()
                 
         ### plotting
-        def _plot(tpva,n):
+        def _plot(tpva,n,loc):
             t,x,y,px,py,vx,vy,ax,ay,ro = tpva
             rot,rop,rov,roa = ro
             
@@ -357,7 +357,7 @@ class Kinematics(object):
             plt.plot(t[3],x[3],'-.',c=self.clrs[3],lw=5); plt.plot(t[3],px[3],c=self.clrs[3],label='Neck (base)')
             plt.plot(t[4],x[4],'-.',c=self.clrs[4],lw=5); plt.plot(t[4],px[4],c=self.clrs[4],label='Tail (base)')
             plt.plot(t[5],x[5],'-.',c=self.clrs[5],lw=5); plt.plot(t[5],px[5],c=self.clrs[5],label='LW')
-            plt.title('X Positions [%s]' %n, fontsize=32); plt.legend(fontsize=20, loc='upper left')
+            plt.title('X Positions [%s]' %n, fontsize=32); plt.legend(fontsize=20, loc=loc)
             plt.xlabel('Time (s)',fontsize=24); plt.ylabel('Position (cm)',fontsize=24)
             plt.xticks(fontsize=20), plt.yticks(fontsize=20)
             
@@ -368,7 +368,7 @@ class Kinematics(object):
             plt.plot(t[3],y[3],'-.',c=self.clrs[3],lw=5); plt.plot(t[3],py[3],c=self.clrs[3],label='Neck (base)')
             plt.plot(t[4],y[4],'-.',c=self.clrs[4],lw=5); plt.plot(t[4],py[4],c=self.clrs[4],label='Tail (base)')
             plt.plot(t[5],y[5],'-.',c=self.clrs[5],lw=5); plt.plot(t[5],py[5],c=self.clrs[5],label='LW')
-            plt.title('Y Positions [%s]' %n, fontsize=32); plt.legend(fontsize=20, loc='upper left')
+            plt.title('Y Positions [%s]' %n, fontsize=32); plt.legend(fontsize=20, loc=loc)
             plt.xlabel('Time (s)',fontsize=24); plt.ylabel('Position (cm)',fontsize=24)
             plt.xticks(fontsize=20), plt.yticks(fontsize=20)
             
@@ -422,16 +422,16 @@ class Kinematics(object):
             ## = arcTan[( neck - tail )y / ( neck - tail )x ]
             plt.subplot(427)
             plt.plot(rot,rop,c=self.clrs[0],label='Angle')
-            plt.plot(rot,rov/10,c=self.clrs[1],label='Angular Vel. (/10)')
-            plt.plot(rot,roa/1000,c=self.clrs[2],label='Angular Acc. (/1000)')
+            plt.plot(rot,rov/10,c=self.clrs[1],label='Ang. Vel. (/10)')
+            plt.plot(rot,roa/1000,c=self.clrs[2],label='Ang. Acc. (/1000)')
             plt.title('Body Rotation (0=horizontal) [%s]' %n, fontsize=32); plt.legend(fontsize=20, loc='upper right')
             plt.xlabel('Time (s)',fontsize=24); plt.ylabel('Angle (deg) [velocity/acceleration]',fontsize=24)
             plt.xticks(fontsize=20), plt.yticks(fontsize=20); plt.ylim(-60,60)
         
-        _plot(avo_tpva,n='Avocet')
-        _plot(sho_tpva,n='Shoveler')
-        _plot(avo_cpva,n='Avocet [rel.]')
-        _plot(sho_cpva,n='Shoveler [rel.]')
+        _plot(avo_tpva,n='Avocet',loc='upper left')
+        _plot(sho_tpva,n='Shoveler',loc='upper left')
+        _plot(avo_cpva,n='Avocet [rel.]',loc='upper right')
+        _plot(sho_cpva,n='Shoveler [rel.]',loc='upper right')
         
     def coord_trans(self):
         """
