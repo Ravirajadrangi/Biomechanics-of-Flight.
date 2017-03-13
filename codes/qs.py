@@ -16,7 +16,7 @@ class QS(object):
     Assumptions:
     -------------
     - Sinusoidal wing kinematics (both strokes and rotations)
-     - The maximum geometric angle of attack is 45 deg
+     - The maximum geometric angle of attack is (default) 45 deg
     - Wings are half-ellipses
      - 2a = chord length at shoulder
      -  b = radius (span) of the wing
@@ -30,11 +30,17 @@ class QS(object):
 
      Defaults to 90 degrees.
     
+    - Wing twisting angle (adjusting geometric angle of attack)
+     - for fast-forward flight (e.g. shoveler), could use a smaller number
+       to avoid negative lift in downstroke
+
+     Defaults to 45 degrees.
+    
     The inputs should be dimensional.
     """
     
     def __init__(self,wing_freq,wing_amp,wing_a,wing_r,body_v,
-                 sp_ang=90.*u.deg,Nstep=200,Nsegments=100):
+                 sp_ang=90.*u.deg,Nstep=200,Nsegments=100,twist=45.*u.deg):
         ## wing kinematics
         self.wing_ome = (2*np.pi*wing_freq).to(u.s**-1)
         self.wing_amp = wing_amp
@@ -54,8 +60,9 @@ class QS(object):
         self.wing_r = np.linspace(0.,wing_r.value,Nsegments).reshape(100,1) * u.cm
         self.wing_c = self._ellipse(self.wing_a,wing_r,self.wing_r)
 
-        ## stroke plane angle
+        ## stroke plane angle / wing twist (rotation) angle
         self.sp_ang = sp_ang.to(u.rad)
+        self.twist  = twist.value
         
         ## Constants
         self.rho_air = 1*u.kg/u.m**3
@@ -69,7 +76,7 @@ class QS(object):
         
         ## geometric AoA
         ### a "horizontal" wing experiences 90 AoA in downstroke
-        alpha_geo = (90 - np.sin(wt.value)*45)*u.deg 
+        alpha_geo = (90 - np.sin(wt.value)*self.twist)*u.deg 
         
         ## correction from body speed
         ### speeds of wing elements
