@@ -1,5 +1,3 @@
-# ME303 - Win 17 Final Project
-_(Updated: 03/13/17)_
 
 ## Perspectives
 This repository stores the analysis codes and physical backgrounds of my final project for the Stanford ME303 course (Winter 2017): Biomechanics of Flight. All material can be freely distributed with proper citation of this repository: [https://github.com/Mipanox/ME303](https://github.com/Mipanox/ME303). 
@@ -24,4 +22,3 @@ The whole process of landing is modeled by three mechanisms: (1) [Steady flight]
 Based on the assumptions, the birds are fully characterized by point masses, (half-)elliptical wings, and flat plates for the feet, with certain properties inferred from the kinematics/biology. The [codes](https://nbviewer.jupyter.org/github/Mipanox/ME303/tree/master/codes/) simulate the forces and powers that would be generated for the modelled "artificial" birds. Comparisons with observations are also conducted and examined in each notebook.
 
 ## Conclusion
-_Coming soon..._
